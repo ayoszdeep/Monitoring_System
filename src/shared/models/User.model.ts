@@ -1,7 +1,6 @@
 import mongoose, { Document, Schema } from "mongoose";
 import argon2 from "argon2";
-// import SecurityUtils from "../utils/SecurityUtils.js";
-import { passwordSchema } from "../validators/User.validator.js";
+import { passwordSchema } from "../validators/User.validator";
 
 export interface IUser extends Document {
     username: string;

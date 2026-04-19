@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-import logger from "../loggers/logger.js";
-import { AppError } from "../utils/appError.js";
-import ResponseFormatter from "../utils/responseFormatter.js";
+import logger from "../loggers/logger";
+import { AppError } from "../utils/appError";
+import ResponseFormatter from "../utils/responseFormatter";
 
 export const errorHandler = (
   err: unknown,
