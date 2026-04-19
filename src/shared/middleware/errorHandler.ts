@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import logger from "../loggers/logger";
-import { AppError } from "../utils/appError";
-import ResponseFormatter from "../utils/responseFormatter";
+import { AppError } from "../utils/errors/appError";
+import ResponseFormatter from "../utils/helpers/responseFormatter";
 
 export const errorHandler = (
   err: unknown,
@@ -13,7 +13,7 @@ export const errorHandler = (
   let message = "Internal server error";
   let errors: unknown = null;
 
-  // ✅ AppError (your custom errors)
+ 
   if (err instanceof AppError) {
     statusCode = err.statusCode;
     message = err.message;
@@ -26,13 +26,13 @@ export const errorHandler = (
     errors = Object.values((err as any).errors).map((e: any) => e.message);
   }
 
-  // ✅ Duplicate key error
+
   else if ((err as any).code === 11000) {
     statusCode = 409;
     message = "Duplicate key error";
   }
 
-  // ✅ JWT errors
+
   else if ((err as any).name === "JsonWebTokenError") {
     statusCode = 401;
     message = "Invalid token";
@@ -41,7 +41,7 @@ export const errorHandler = (
     message = "Token expired";
   }
 
-  // ✅ Logging (VERY IMPORTANT)
+
   logger.error("Error occurred", {
     message: (err as any)?.message,
     statusCode,
