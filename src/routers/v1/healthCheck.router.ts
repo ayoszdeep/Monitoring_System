@@ -1,18 +1,9 @@
 import express from "express";
-import ResponseFormatter from "../../shared/utils/helpers/responseFormatter";
-const healthCheck = express.Router();
+import { healthCheckController } from "../../controllers/healthCheck.controller";
 
-healthCheck.get('/', (req, res) => {
-    res.status(200).json(
-        ResponseFormatter.success(
-            {
-                status: 'healthy',
-                timestamp: new Date().toISOString(),
-                uptime: process.uptime(),
-            },
-            'Service is healthy'
-        )
-    );
-});
 
-export default healthCheck;
+const router = express.Router();
+
+router.get("/", healthCheckController);
+
+export default router;
