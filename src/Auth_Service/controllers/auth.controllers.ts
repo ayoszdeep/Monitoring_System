@@ -4,12 +4,14 @@ import { APPLICATION_ROLES } from "../../shared/constants/roles";
 import ResponseFormatter from "../../shared/utils/helpers/responseFormatter";
 
 
+import { RegisterDTO, LoginDTO, UserResponseDTO } from "../dto/auth.dto";
+
 // 🔥 Interface instead of concrete class
 interface IAuthService {
-    onboardSuperAdmin(data: any): Promise<{ user: any; token: string }>;
-    register(data: any): Promise<{ user: any; token: string }>;
-    login(username: string, password: string): Promise<{ user: any; token: string }>;
-    getProfile(userId: string): Promise<any>;
+    onboardSuperAdmin(data: RegisterDTO): Promise<{ user: UserResponseDTO; token: string }>;
+    register(data: RegisterDTO): Promise<{ user: UserResponseDTO; token: string }>;
+    login(data: LoginDTO): Promise<{ user: UserResponseDTO; token: string }>;
+    getProfile(userId: string): Promise<UserResponseDTO>;
 }
 
 interface AuthRequest extends Request {
@@ -38,14 +40,8 @@ export class AuthController {
 
     async onboardSuperAdmin(req: Request, res: Response, next: NextFunction) {
         try {
-            const { username, email, password } = req.body;
-
-            const superAdminData = {
-                username,
-                email,
-                password,
-                role: APPLICATION_ROLES.SUPER_ADMIN,
-            };
+            const superAdminData: RegisterDTO = req.body;
+            superAdminData.role = APPLICATION_ROLES.SUPER_ADMIN;
 
             const { token, user } =
                 await this.authService.onboardSuperAdmin(superAdminData);
@@ -66,14 +62,10 @@ export class AuthController {
 
     async register(req: Request, res: Response, next: NextFunction) {
         try {
-            const { username, email, password, role } = req.body;
-
-            const userData = {
-                username,
-                email,
-                password,
-                role: role || APPLICATION_ROLES.CLIENT_VIEWER,
-            };
+            const userData: RegisterDTO = req.body;
+            if (!userData.role) {
+                userData.role = APPLICATION_ROLES.CLIENT_VIEWER;
+            }
 
             const { token, user } =
                 await this.authService.register(userData);
@@ -94,10 +86,10 @@ export class AuthController {
 
     async login(req: Request, res: Response, next: NextFunction) {
         try {
-            const { username, password } = req.body;
+            const loginData: LoginDTO = req.body;
 
             const { user, token } =
-                await this.authService.login(username, password);
+                await this.authService.login(loginData);
 
             res.cookie("authToken", token, {
                 httpOnly: config.cookie.httpOnly,

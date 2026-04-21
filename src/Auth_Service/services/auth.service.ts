@@ -5,6 +5,7 @@ import logger from "../../shared/loggers/logger";
 import argon2 from "argon2";
 import { APPLICATION_ROLES } from "../../shared/constants/roles";
 import { IUser } from "../types/user.types";
+import { RegisterDTO, LoginDTO, UserResponseDTO } from "../dto/auth.dto";
 
 interface IUserRepository {
     findAll(): Promise<IUser[]>;
@@ -41,10 +42,10 @@ export class AuthService {
     }
 
     
-    formatUserForResponse(user: IUser): Partial<IUser> {
+    formatUserForResponse(user: IUser): UserResponseDTO {
         const userObj: any = "toObject" in user ? (user as any).toObject() : { ...user };
         delete userObj.password;
-        return userObj;
+        return userObj as UserResponseDTO;
     }
     
     async comparePassword(
@@ -55,7 +56,7 @@ export class AuthService {
     }
 
     // 👑 Super Admin Onboarding
-    async onboardSuperAdmin(superAdminData: Partial<IUser>) {
+    async onboardSuperAdmin(superAdminData: RegisterDTO) {
         try {
             const existingUsers = await this.userRepository.findAll();
 
@@ -63,7 +64,7 @@ export class AuthService {
                 throw new AppError("Super admin onboarding is disabled", 403);
             }
 
-            const user = await this.userRepository.create(superAdminData);
+            const user = await this.userRepository.create(superAdminData as Partial<IUser>);
             const token = this.generateToken(user);
 
             logger.info("Admin onboarded successfully", {
@@ -81,7 +82,7 @@ export class AuthService {
     }
 
     // 📝 Register User
-    async register(userData: Partial<IUser>) {
+    async register(userData: RegisterDTO) {
         try {
             const existingUser = await this.userRepository.findByUsername(
                 userData.username!
@@ -97,7 +98,7 @@ export class AuthService {
                 throw new AppError("Email already exists", 409);
             }
 
-            const user = await this.userRepository.create(userData);
+            const user = await this.userRepository.create(userData as Partial<IUser>);
             const token = this.generateToken(user);
 
             logger.info("User registered successfully", {
@@ -115,8 +116,9 @@ export class AuthService {
     }
 
     // 🔓 Login
-    async login(username: string, password: string) {
+    async login(loginData: LoginDTO) {
         try {
+            const { username, password } = loginData;
             const user = await this.userRepository.findByUsername(username);
 
             if (!user) {
