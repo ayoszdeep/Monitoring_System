@@ -8,6 +8,7 @@ import { errorHandler } from './shared/middleware/errorHandler';
 import { attachCorrelationIdMiddleware } from './shared/middleware/correlationId.middleware';
 import logger from './shared/loggers/logger';
 import ResponseFormatter from './shared/utils/helpers/responseFormatter';
+import cookieParser from 'cookie-parser';
 
 const app = express();
 
@@ -17,6 +18,7 @@ app.use(cors({
     origin: true,
     credentials: true
 }));
+app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

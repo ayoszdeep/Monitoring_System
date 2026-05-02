@@ -30,7 +30,7 @@ export class AuthController {
 
         this.authService = authService;
 
-        // 🔥 required for normal functions
+
         this.onboardSuperAdmin = this.onboardSuperAdmin.bind(this);
         this.register = this.register.bind(this);
         this.login = this.login.bind(this);

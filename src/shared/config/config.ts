@@ -1,6 +1,4 @@
-import * as dotenv from "dotenv";
-
-dotenv.config();
+import "dotenv/config";
 
 const toNumber = (value: string | undefined, defaultValue: number) =>
   parseInt(value || String(defaultValue), 10);

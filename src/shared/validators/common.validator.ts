@@ -17,7 +17,8 @@ const validate =
       const result = schema.safeParse(req.body);
 
       if (!result.success) {
-        const errors = (result.error as any).errors.map(
+        const zodErrors = (result.error as any).issues || (result.error as any).errors || [];
+        const errors = zodErrors.map(
           (err: any) => `${err.path.join(".")} ${err.message}`
         );
 
@@ -31,10 +32,10 @@ const validate =
       req.body = result.data;
 
       next();
-    } catch (error) {
+    } catch (error: any) {
       res
         .status(400)
-        .json(ResponseFormatter.error("Validation failed", 400));
+        .json(ResponseFormatter.error("Validation failed (Catch Block)", 400, error?.message || error));
     }
   };
 
