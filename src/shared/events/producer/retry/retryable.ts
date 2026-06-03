@@ -1,4 +1,4 @@
-import { RETRYABLE_PATTERNS } from '../../../constants/circuitStatee
+import { RETRYABLE_PATTERNS } from '../../../constants/circuitState';
 import { RetryableError } from '../../../utils/types/circuit.types';
 
 export function isRetryable(err: unknown): boolean {
